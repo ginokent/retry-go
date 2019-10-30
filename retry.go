@@ -41,10 +41,10 @@ func (r *Retrier) Retry() bool {
 		return false
 	default:
 		switch {
-		case r.retries == 0:
+		case r.retries <= 0:
 			// 1 回目は眠らない。まだリトライじゃないから。
 			// noop
-			r.retries++
+			r.retries = 1
 			return true
 		case r.retries > r.maxRetries:
 			r.error = ErrorMaxRetriesExceeded
