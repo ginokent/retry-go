@@ -18,11 +18,11 @@ type Retrier struct {
 	error         error
 }
 
-func New(max int, interval, timeout time.Duration) *Retrier {
+func New(maxRetries int, retryInterval, timeout time.Duration) *Retrier {
 	return &Retrier{
 		retries:       0,
-		maxRetries:    max,
-		retryInterval: interval,
+		maxRetries:    maxRetries,
+		retryInterval: retryInterval,
 		timeout:       time.After(timeout),
 		error:         nil,
 	}
