@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrorMaxRetriesExceeded = errors.New("maxRetries retries exceeded")
+	ErrorMaxRetriesExceeded = errors.New("max retries exceeded")
 	ErrorTimeout            = errors.New("timeout")
 )
 
