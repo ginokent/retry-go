@@ -8,8 +8,8 @@ for r.Retry() {
     // do something
 }
 
-if r.Error != nil {
-    return r.Error // "max retries exceeded" or "timeout"
+if r.Error() != nil {
+    return r.Error() // "max retries exceeded" or "timeout"
 }
 ```
 
@@ -21,7 +21,7 @@ for r.RetryWithExponentialBackoff() {
     // do something
 }
 
-if r.Error != nil {
-    return r.Error // "max retries exceeded" or "timeout"
+if r.Error() != nil {
+    return r.Error() // "max retries exceeded" or "timeout"
 }
 ```
