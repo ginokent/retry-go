@@ -8,6 +8,7 @@ import (
 var (
 	ErrorMaxRetriesExceeded = errors.New("max retries exceeded")
 	ErrorTimeout            = errors.New("timeout")
+	ErrorDoNotReuseRetrier  = errors.New("do not reuse Retrier")
 )
 
 type Retrier struct {
@@ -35,6 +36,12 @@ func (r *Retrier) GetTimeout() <-chan time.Time { return r.timeout }
 func (r *Retrier) Error() error                 { return r.error }
 
 func (r *Retrier) Retry() bool {
+	// ** DO NOT REUSE Retrier **
+	if r.error != nil {
+		r.error = ErrorDoNotReuseRetrier
+		return false
+	}
+	// retry loop
 	select {
 	case <-r.timeout:
 		r.error = ErrorTimeout
@@ -59,16 +66,22 @@ func (r *Retrier) Retry() bool {
 }
 
 func (r *Retrier) RetryWithExponentialBackoff() bool {
+	// ** DO NOT REUSE Retrier **
+	if r.error != nil {
+		r.error = ErrorDoNotReuseRetrier
+		return false
+	}
+	// retry loop
 	select {
 	case <-r.timeout:
 		r.error = ErrorTimeout
 		return false
 	default:
 		switch {
-		case r.retries == 0:
+		case r.retries <= 0:
 			// 1 回目は眠らない。まだリトライじゃないから。
 			// noop
-			r.retries++
+			r.retries = 1
 			return true
 		case r.retries > r.maxRetries:
 			r.error = ErrorMaxRetriesExceeded
