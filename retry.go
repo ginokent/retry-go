@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	ErrorMaxRetriesExceeded = errors.New("max retries exceeded")
-	ErrorTimeout            = errors.New("timeout")
-	ErrorDoNotReuseRetrier  = errors.New("do not reuse Retrier")
+	errorMaxRetriesExceeded = errors.New("max retries exceeded")
+	errorTimeout            = errors.New("timeout")
+	errorDoNotReuseRetrier  = errors.New("do not reuse Retrier")
 )
 
 type Retrier struct {
@@ -38,13 +38,13 @@ func (r *Retrier) Error() error                 { return r.error }
 func (r *Retrier) Retry() bool {
 	// ** DO NOT REUSE Retrier **
 	if r.error != nil {
-		r.error = ErrorDoNotReuseRetrier
+		r.error = errorDoNotReuseRetrier
 		return false
 	}
 	// retry loop
 	select {
 	case <-r.timeout:
-		r.error = ErrorTimeout
+		r.error = errorTimeout
 		return false
 	default:
 		switch {
@@ -54,7 +54,7 @@ func (r *Retrier) Retry() bool {
 			r.retries = 1
 			return true
 		case r.retries > r.maxRetries:
-			r.error = ErrorMaxRetriesExceeded
+			r.error = errorMaxRetriesExceeded
 			return false
 		default:
 			// 2 回目（リトライ初回）以降は眠る。
@@ -68,13 +68,13 @@ func (r *Retrier) Retry() bool {
 func (r *Retrier) RetryWithExponentialBackoff() bool {
 	// ** DO NOT REUSE Retrier **
 	if r.error != nil {
-		r.error = ErrorDoNotReuseRetrier
+		r.error = errorDoNotReuseRetrier
 		return false
 	}
 	// retry loop
 	select {
 	case <-r.timeout:
-		r.error = ErrorTimeout
+		r.error = errorTimeout
 		return false
 	default:
 		switch {
@@ -84,7 +84,7 @@ func (r *Retrier) RetryWithExponentialBackoff() bool {
 			r.retries = 1
 			return true
 		case r.retries > r.maxRetries:
-			r.error = ErrorMaxRetriesExceeded
+			r.error = errorMaxRetriesExceeded
 			return false
 		default:
 			// 2 回目（リトライ初回）以降は眠る。

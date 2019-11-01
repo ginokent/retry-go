@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestRetrier_Retry(t *testing.T) {
-	// ErrorMaxRetriesExceeded
+	// errorMaxRetriesExceeded
 	{
 		testMaxRetriesExceeded := New(4, 100*time.Millisecond, 10*time.Second)
 		log.Printf("start: %#v\n", testMaxRetriesExceeded)
@@ -30,12 +30,12 @@ func TestRetrier_Retry(t *testing.T) {
 			log.Printf("  tmp: %#v\n", testMaxRetriesExceeded)
 		}
 		log.Printf("  end: %#v\n", testMaxRetriesExceeded)
-		if ErrorMaxRetriesExceeded != testMaxRetriesExceeded.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorMaxRetriesExceeded, testMaxRetriesExceeded.Error())
+		if errorMaxRetriesExceeded != testMaxRetriesExceeded.Error() {
+			t.Fatalf("want: %v, actual: %v", errorMaxRetriesExceeded, testMaxRetriesExceeded.Error())
 		}
 	}
 
-	// ErrorTimeout
+	// errorTimeout
 	{
 		testTimeout := New(4, 100*time.Millisecond, 100*time.Millisecond)
 		log.Printf("start: %#v\n", testTimeout)
@@ -43,27 +43,29 @@ func TestRetrier_Retry(t *testing.T) {
 			log.Printf("  tmp: %#v\n", testTimeout)
 		}
 		log.Printf("  end: %#v\n", testTimeout)
-		if ErrorTimeout != testTimeout.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorTimeout, testTimeout.Error())
+		if errorTimeout != testTimeout.Error() {
+			t.Fatalf("want: %v, actual: %v", errorTimeout, testTimeout.Error())
 		}
 	}
 
-	// ErrorDoNotReuseRetrier
+	// errorDoNotReuseRetrier
 	{
 		testReuse := New(4, 100*time.Millisecond, 100*time.Millisecond)
 		log.Printf("start: %#v\n", testReuse)
-		for testReuse.Retry() {}
+		for testReuse.Retry() {
+		}
 		log.Printf("  mid: %#v\n", testReuse)
-		for testReuse.Retry() {}
+		for testReuse.Retry() {
+		}
 		log.Printf("  end: %#v\n", testReuse)
-		if ErrorDoNotReuseRetrier != testReuse.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorDoNotReuseRetrier, testReuse.Error())
+		if errorDoNotReuseRetrier != testReuse.Error() {
+			t.Fatalf("want: %v, actual: %v", errorDoNotReuseRetrier, testReuse.Error())
 		}
 	}
 }
 
 func TestRetry_NewSleepExponentialBackoff(t *testing.T) {
-	// ErrorMaxRetriesExceeded
+	// errorMaxRetriesExceeded
 	{
 		var before, after time.Time
 		before = time.Now()
@@ -81,12 +83,12 @@ func TestRetry_NewSleepExponentialBackoff(t *testing.T) {
 			before = after
 		}
 		log.Printf("  end: %#v\n", testMaxRetriesExceeded)
-		if ErrorMaxRetriesExceeded != testMaxRetriesExceeded.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorMaxRetriesExceeded, testMaxRetriesExceeded.Error())
+		if errorMaxRetriesExceeded != testMaxRetriesExceeded.Error() {
+			t.Fatalf("want: %v, actual: %v", errorMaxRetriesExceeded, testMaxRetriesExceeded.Error())
 		}
 	}
 
-	// ErrorTimeout
+	// errorTimeout
 	{
 		var before, after time.Time
 		before = time.Now()
@@ -104,21 +106,23 @@ func TestRetry_NewSleepExponentialBackoff(t *testing.T) {
 			before = after
 		}
 		log.Printf("  end: %#v\n", testTimeout)
-		if ErrorTimeout != testTimeout.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorTimeout, testTimeout.Error())
+		if errorTimeout != testTimeout.Error() {
+			t.Fatalf("want: %v, actual: %v", errorTimeout, testTimeout.Error())
 		}
 	}
 
-	// ErrorDoNotReuseRetrier
+	// errorDoNotReuseRetrier
 	{
 		testReuse := New(4, 100*time.Millisecond, 100*time.Millisecond)
 		log.Printf("start: %#v\n", testReuse)
-		for testReuse.RetryWithExponentialBackoff() {}
+		for testReuse.RetryWithExponentialBackoff() {
+		}
 		log.Printf("  mid: %#v\n", testReuse)
-		for testReuse.RetryWithExponentialBackoff() {}
+		for testReuse.RetryWithExponentialBackoff() {
+		}
 		log.Printf("  end: %#v\n", testReuse)
-		if ErrorDoNotReuseRetrier != testReuse.Error() {
-			t.Fatalf("want: %v, actual: %v", ErrorDoNotReuseRetrier, testReuse.Error())
+		if errorDoNotReuseRetrier != testReuse.Error() {
+			t.Fatalf("want: %v, actual: %v", errorDoNotReuseRetrier, testReuse.Error())
 		}
 	}
 }

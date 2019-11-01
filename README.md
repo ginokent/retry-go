@@ -5,10 +5,10 @@
 r := retry.New(maxRetries, retryInterval, timeout)
 
 for r.Retry() {
-    // do something
-    if success {
-        break
-    }
+	// do something
+	if success {
+		break
+	}
 }
 
 if r.Error() != nil {
@@ -21,10 +21,10 @@ if r.Error() != nil {
 r := retry.New(maxRetries, retryInterval, timeout)
 
 for r.RetryWithExponentialBackoff() {
-    // do something
-    if success {
-        break
-    }
+	// do something
+	if success {
+		break
+	}
 }
 
 if r.Error() != nil {
