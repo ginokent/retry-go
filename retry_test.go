@@ -53,6 +53,7 @@ func TestRetrier_Retry(t *testing.T) {
 		testReuse := New(4, 100*time.Millisecond, 100*time.Millisecond)
 		log.Printf("start: %#v\n", testReuse)
 		for testReuse.Retry() {}
+		log.Printf("  mid: %#v\n", testReuse)
 		for testReuse.Retry() {}
 		log.Printf("  end: %#v\n", testReuse)
 		if ErrorDoNotReuseRetrier != testReuse.Error() {
@@ -113,6 +114,7 @@ func TestRetry_NewSleepExponentialBackoff(t *testing.T) {
 		testReuse := New(4, 100*time.Millisecond, 100*time.Millisecond)
 		log.Printf("start: %#v\n", testReuse)
 		for testReuse.RetryWithExponentialBackoff() {}
+		log.Printf("  mid: %#v\n", testReuse)
 		for testReuse.RetryWithExponentialBackoff() {}
 		log.Printf("  end: %#v\n", testReuse)
 		if ErrorDoNotReuseRetrier != testReuse.Error() {
