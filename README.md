@@ -1,4 +1,6 @@
 # retry-go
+[![Build Status](https://travis-ci.com/djeeno/retry-go.svg?branch=master)](https://travis-ci.com/djeeno/retry-go)
+[![codecov](https://codecov.io/gh/djeeno/retry-go/branch/master/graph/badge.svg)](https://codecov.io/gh/djeeno/retry-go)
 
 ## retry
 ```go
