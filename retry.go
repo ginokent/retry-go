@@ -8,42 +8,53 @@ import (
 var (
 	errorMaxRetriesExceeded = errors.New("max retries exceeded")
 	errorTimeout            = errors.New("timeout")
-	errorDoNotReuseRetrier  = errors.New("do not reuse Retrier")
+	errorDoNotReuseRetrier  = errors.New("do not reuse retrier")
 )
 
-type Retrier struct {
+type retrier struct {
 	retries       int
 	maxRetries    int
 	retryInterval time.Duration
-	timeout       <-chan time.Time
+	timeout       time.Duration
+	timeoutChan   <-chan time.Time
 	error         error
 }
 
-func New(maxRetries int, retryInterval, timeout time.Duration) *Retrier {
-	return &Retrier{
+// New return retrier
+func New(maxRetries int, retryInterval, timeout time.Duration) *retrier {
+	return &retrier{
 		retries:       0,
 		maxRetries:    maxRetries,
 		retryInterval: retryInterval,
-		timeout:       time.After(timeout),
+		timeout:       timeout,
+		timeoutChan:   nil,
 		error:         nil,
 	}
 }
 
-func (r *Retrier) GetRetries() int              { return r.retries }
-func (r *Retrier) GetMaxRetries() int           { return r.maxRetries }
-func (r *Retrier) GetInterval() time.Duration   { return r.retryInterval }
-func (r *Retrier) GetTimeout() <-chan time.Time { return r.timeout }
-func (r *Retrier) Error() error                 { return r.error }
+func (r *retrier) GetRetries() int            { return r.retries }
+func (r *retrier) GetMaxRetries() int         { return r.maxRetries }
+func (r *retrier) GetInterval() time.Duration { return r.retryInterval }
+func (r *retrier) GetTimeout() time.Duration  { return r.timeout }
+func (r *retrier) GetError() error            { return r.error }
 
-func (r *Retrier) Retry() bool {
-	// ** DO NOT REUSE Retrier **
+func (r *retrier) ResetRetries() {
+	r.retries = 0
+}
+
+func (r *retrier) ResetError() {
+	r.error = error(nil)
+}
+
+func (r *retrier) Retry() bool {
+	// ** DO NOT REUSE retrier **
 	if r.error != nil {
 		r.error = errorDoNotReuseRetrier
 		return false
 	}
 	// retry loop
 	select {
-	case <-r.timeout:
+	case <-r.timeoutChan:
 		r.error = errorTimeout
 		return false
 	default:
@@ -52,6 +63,7 @@ func (r *Retrier) Retry() bool {
 			// 1 回目は眠らない。まだリトライじゃないから。
 			// noop
 			r.retries = 1
+			r.timeoutChan = time.After(r.timeout)
 			return true
 		case r.retries > r.maxRetries:
 			r.error = errorMaxRetriesExceeded
@@ -65,15 +77,15 @@ func (r *Retrier) Retry() bool {
 	}
 }
 
-func (r *Retrier) RetryWithExponentialBackoff() bool {
-	// ** DO NOT REUSE Retrier **
+func (r *retrier) RetryWithExponentialBackoff() bool {
+	// ** DO NOT REUSE retrier **
 	if r.error != nil {
 		r.error = errorDoNotReuseRetrier
 		return false
 	}
 	// retry loop
 	select {
-	case <-r.timeout:
+	case <-r.timeoutChan:
 		r.error = errorTimeout
 		return false
 	default:
@@ -82,6 +94,7 @@ func (r *Retrier) RetryWithExponentialBackoff() bool {
 			// 1 回目は眠らない。まだリトライじゃないから。
 			// noop
 			r.retries = 1
+			r.timeoutChan = time.After(r.timeout)
 			return true
 		case r.retries > r.maxRetries:
 			r.error = errorMaxRetriesExceeded

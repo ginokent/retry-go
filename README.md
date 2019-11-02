@@ -11,8 +11,8 @@ for r.Retry() {
 	}
 }
 
-if r.Error() != nil {
-	return r.Error() // "max retries exceeded" or "timeout"
+if r.GetError() != nil {
+	return r.GetError() // "max retries exceeded" or "timeout"
 }
 ```
 
@@ -27,7 +27,7 @@ for r.RetryWithExponentialBackoff() {
 	}
 }
 
-if r.Error() != nil {
-	return r.Error() // "max retries exceeded" or "timeout"
+if r.GetError() != nil {
+	return r.GetError() // "max retries exceeded" or "timeout"
 }
 ```
